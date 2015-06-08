@@ -165,11 +165,10 @@ while getopts $param_pattern optname
 #build文件夹路径
 build_path=${project_path}/build
 
-BUILD_LOGS_DIR=$build_path/logs
-if [ -d $BUILD_LOGS_DIR ]; then
-	rm -rf BUILD_LOGS_DIR
+if [ ! -d $LOGS_BUILD_DIR ]; then
+	mkdir -p $LOGS_BUILD_DIR
 fi
-mkdir -p $BUILD_LOGS_DIR
+
 
 #生成的app文件目录
 appdirname=Release-iphoneos
@@ -212,7 +211,7 @@ fi
 #编译工程
 cd $project_path
 if [ "$log_to_file" = "y" ];then
-	$build_cmd >> ${BUILD_LOGS_DIR}/build.log 2>&1 || exit
+	$build_cmd >> ${LOGS_BUILD_DIR}/build.log 2>&1 || exit
 else
 	$build_cmd || exit
 fi
@@ -252,7 +251,7 @@ echo $ipa_name.ipa
 package_cmd='xcrun -sdk iphoneos PackageApplication -v ./'${appdirname}'/*.app -o '${IPA_BUILD_DIR}'/'${ipa_name}'.ipa'
 
 if [ "$log_to_file" = "y" ];then
-	$package_cmd >> ${BUILD_LOGS_DIR}/package.log 2>&1 || exit
+	$package_cmd >> ${LOGS_BUILD_DIR}/package.log 2>&1 || exit
 else
 	$package_cmd || exit
 fi

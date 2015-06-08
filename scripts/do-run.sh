@@ -34,6 +34,7 @@ export PLISTBUDDY=/usr/libexec/PlistBuddy
 export PROJECT_HOME=`pwd`
 export BUILD_HOME=$PROJECT_HOME/build
 export IPA_BUILD_DIR=$BUILD_HOME/ipa-build
+export LOGS_BUILD_DIR=$BUILD_HOME/logs
 
 export PATH=$PROJECT_HOME/scripts:$PATH
 

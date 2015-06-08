@@ -10,6 +10,7 @@
 - Package app in ipa file.
 - Generate resources for ITMS service.
 - Deploy ITMS files to localhost.
+- Archive log files and deploy to localhost.
 
 ## Installation
 
@@ -59,8 +60,20 @@ scripts/run-build.sh -local -release
 CI build & deploy for debug:
 
 ```
-scripts/run-build.sh -ci -debug || exit
-scripts/run-deploy.sh -ci -debug || exit
+set -x
+env
+ls -la
+
+scripts/run-build.sh -ci -debug
+RET_CODE=$?
+if [ "$RET_CODE" == "0" ]; then
+    scripts/run-deploy.sh -ci -debug
+    RET_CODE=$?
+fi
+scripts/deploy-ci-logs.sh
+echo "Job Return:$RET_CODE"
+exit $RET_CODE
+
 ```
 
 **Due to the Gitlab-CI log limit, xcode build & package output will be directed to log files under $PROJECT_HOME/build/logs/ in CI runner env.**
