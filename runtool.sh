@@ -63,7 +63,13 @@ if [ "$RUN_ACTION" = "build" ]; then
 
     bumpinfo.sh $INFO_PLIST_SOURCE $PROJECT_HOME/$XCODE_PROJECT/Info.plist $RUN_BUILD_CONFIG || exit
 
-    build_cmd='ipa-build.sh '${PROJECT_HOME}' -w -s '${XCODE_SCHEME}' -n -p iOS -c '${RUN_BUILD_CONFIG}
+    build_cmd='ipa-build.sh '${PROJECT_HOME}' -w -s '${XCODE_SCHEME}' -n -p iOS'
+    if [ "$RUN_BUILD_CONFIG" = "debug" ]; then
+        build_cmd=${build_cmd}' -c Debug'
+    fi
+    if [ "$RUN_BUILD_CONFIG" = "release" ]; then
+        build_cmd=${build_cmd}' -c Release'
+    fi
     if [ "$LOG_TO_FILE" = "yes" ]; then
         build_cmd=${build_cmd}' -l'
     fi
@@ -89,7 +95,10 @@ if [ "$RUN_ACTION" = "archive" ]; then
     clean-derived-data.sh
     bumpinfo.sh $INFO_PLIST_SOURCE $PROJECT_HOME/$XCODE_PROJECT/Info.plist $RUN_BUILD_CONFIG || exit
 
-    build_cmd='ipa-build.sh '${PROJECT_HOME}' -a -w -s '${XCODE_SCHEME}' -n -p iOS -c '${RUN_BUILD_CONFIG}
+    build_cmd='ipa-build.sh '${PROJECT_HOME}' -a -w -s '${XCODE_SCHEME}' -n -p iOS'
+    if [ "$RUN_BUILD_CONFIG" = "release" ]; then
+        build_cmd=${build_cmd}' -c Release'
+    fi
     if [ "$LOG_TO_FILE" = "yes" ]; then
         build_cmd=${build_cmd}' -l'
     fi
