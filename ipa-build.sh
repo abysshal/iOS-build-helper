@@ -289,7 +289,7 @@ fi
 echo "Package ipa done.."
 
 if [ "$output_path" != "" ];then
-	cp ${build_path}/ipa-build/${ipa_name}.ipa $output_path/${ipa_name}.ipa
+	cp ${ipa_build_dir}/${ipa_name}.ipa $output_path/${ipa_name}.ipa
 	echo "Copy ipa file successfully to the path $output_path/${ipa_name}.ipa"
 fi
 

@@ -40,7 +40,7 @@ CFBundleDisplayName=`$PLISTBUDDY -c "print CFBundleDisplayName" $BASE_PLIST`
 CFBundleIdentifier=`$PLISTBUDDY -c "print CFBundleIdentifier" $BASE_PLIST`
 #========================
 
-if [ "$BUILD_CONFIG" = "Debug" ]; then
+if [ "$BUILD_CONFIG" = "debug" ]; then
     ####Override paramaters by CI env
     if [ $CI_BUILD_ID ]; then
         CFBundleVersion=$CI_BUILD_ID
