@@ -106,6 +106,8 @@ if [ "$RUN_ACTION" = "itms" ]; then
         deploy-ci-debug.sh || exit
     fi
 
+    echo "ITMS done.."
+
     exit
 fi
 
@@ -120,7 +122,7 @@ if [ "$RUN_ACTION" = "test" ]; then
 
     grep "TEST SUCCEEDED" -i $LOGS_BUILD_DIR/xctest.log
 
-    coverage_cmd="./$PROJECT_HOME/Pods/XcodeCoverage/getcov -o $TEST_COVERAGE_DIR"
+    coverage_cmd="$PROJECT_HOME/Pods/XcodeCoverage/getcov -o $TEST_COVERAGE_DIR"
 
     if [ "$RUN_ENV" = "local" ]; then
         coverage_cmd=$coverage_cmd' -s'
@@ -128,9 +130,13 @@ if [ "$RUN_ACTION" = "test" ]; then
 
     $coverage_cmd || exit
 
+    echo "Export TestCoverage report done.."
+
     if [ "$RUN_ENV" = "ci" ]; then
         deploy-ci-testcoverage.sh || exit
     fi
+
+    echo "Deploy ci TestCoverage done.."
 
     exit
 fi

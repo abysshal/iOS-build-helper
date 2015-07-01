@@ -1,6 +1,6 @@
 #!/bin/bash
 
-usage {
+function usage {
     echo "bumpinfo.sh source.plist target.plist <debug | release>"
 }
 
