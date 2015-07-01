@@ -61,7 +61,7 @@ if [ "$RUN_ACTION" = "build" ]; then
         clean-derived-data.sh
     fi
 
-    bumpinfo.sh $PROJECT_HOME/$INFO_PLIST_SOURCE $PROJECT_HOME/$XCODE_PROJECT/Info.plist $RUN_BUILD_CONFIG || exit
+    bumpinfo.sh $INFO_PLIST_SOURCE $PROJECT_HOME/$XCODE_PROJECT/Info.plist $RUN_BUILD_CONFIG || exit
 
     build_cmd='ipa-build.sh '${PROJECT_HOME}' -w -s '${XCODE_SCHEME}' -n -p iOS -c '${RUN_BUILD_CONFIG}
     if [ "$LOG_TO_FILE" = "yes" ]; then
@@ -81,7 +81,7 @@ if [ "$RUN_ACTION" = "archive" ]; then
     echo "Archive project for Project Home: $PROJECT_HOME"
 
     clean-derived-data.sh
-    bumpinfo.sh $PROJECT_HOME/$INFO_PLIST_SOURCE $PROJECT_HOME/$XCODE_PROJECT/Info.plist $RUN_BUILD_CONFIG || exit
+    bumpinfo.sh $INFO_PLIST_SOURCE $PROJECT_HOME/$XCODE_PROJECT/Info.plist $RUN_BUILD_CONFIG || exit
 
     build_cmd='ipa-build.sh '${PROJECT_HOME}' -a -w -s '${PROJECT_NAME}' -n -p iOS -c '${RUN_BUILD_CONFIG}
     if [ "$LOG_TO_FILE" = "yes" ]; then
