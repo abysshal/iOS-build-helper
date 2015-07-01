@@ -67,6 +67,7 @@ if [ "$RUN_ACTION" = "build" ]; then
     if [ "$LOG_TO_FILE" = "yes" ]; then
         build_cmd=${build_cmd}' -l'
     fi
+    echo "Build cmd:$build_cmd"
     $build_cmd || exit
     echo "Build ipa done.."
 
@@ -131,9 +132,12 @@ if [ "$RUN_ACTION" = "test" ]; then
 
     if [ "$RUN_ENV" = "local" ]; then
         coverage_cmd=$coverage_cmd' -s'
+        $coverage_cmd || exit
     fi
 
-    $coverage_cmd || exit
+    if [ "$RUN_ENV" = "ci" ]; then
+        $coverage_cmd > $LOGS_BUILD_DIR/getcov.log 2>&1 || exit
+    fi
 
     echo "Export TestCoverage report done.."
 
