@@ -74,6 +74,11 @@ if [ "$RUN_ACTION" = "build" ]; then
     ipa-helper.sh verify $IPA_BUILD_DIR/*.ipa || exit
     echo "Verify done.."
 
+    if [ "$RUN_ENV" = "ci" ]; then
+        deploy-ci-ipa.sh || exit
+    fi
+    echo "ITMS done.."
+
     exit
 fi
 
@@ -83,7 +88,7 @@ if [ "$RUN_ACTION" = "archive" ]; then
     clean-derived-data.sh
     bumpinfo.sh $INFO_PLIST_SOURCE $PROJECT_HOME/$XCODE_PROJECT/Info.plist $RUN_BUILD_CONFIG || exit
 
-    build_cmd='ipa-build.sh '${PROJECT_HOME}' -a -w -s '${PROJECT_NAME}' -n -p iOS -c '${RUN_BUILD_CONFIG}
+    build_cmd='ipa-build.sh '${PROJECT_HOME}' -a -w -s '${XCODE_SCHEME}' -n -p iOS -c '${RUN_BUILD_CONFIG}
     if [ "$LOG_TO_FILE" = "yes" ]; then
         build_cmd=${build_cmd}' -l'
     fi
@@ -103,7 +108,7 @@ if [ "$RUN_ACTION" = "itms" ]; then
     fi
 
     if [ "$RUN_ENV" = "ci" ]; then
-        deploy-ci-debug.sh || exit
+        deploy-ci-ipa.sh || exit
     fi
 
     echo "ITMS done.."
