@@ -1,24 +1,31 @@
 #!/bin/bash
 
+usage {
+    echo "bumpinfo.sh source.plist target.plist <debug | release>"
+}
 
-BASE_PLIST=$PROJECT_HOME/scripts/$OEMCONFIG_NAME-config/Info.plist
-
-if [ ! -f $BASE_PLIST ]; then
-    echo "Base plist not exists: $BASE_PLIST"
+if [ $# -lt 3 ]; then
+    usage
     exit 256
 fi
 
-####Inited by shell param####
-INFOPLIST=$PROJECT_HOME/$PROJECT_NAME/Info.plist
-#============================
-
-if [ $# -gt 0 ];
-then
-    INFOPLIST=$1
+BASE_PLIST=$1
+if [ ! -f $BASE_PLIST ]; then
+    echo "Source plist not exists: $BASE_PLIST"
+    exit 256
 fi
 
+INFOPLIST=$2
 if [ ! -f $INFOPLIST ]; then
     echo "Target plist not exists: $INFOPLIST"
+    exit 256
+fi
+
+
+if [ "$3" = "debug" ] || [ "$3" = "release" ]; then
+    BUILD_CONFIG=$3
+else
+    usage
     exit 256
 fi
 
@@ -33,7 +40,7 @@ CFBundleDisplayName=`$PLISTBUDDY -c "print CFBundleDisplayName" $BASE_PLIST`
 CFBundleIdentifier=`$PLISTBUDDY -c "print CFBundleIdentifier" $BASE_PLIST`
 #========================
 
-if [ "$IOS_BUILD_CONFIG" = "Debug" ]; then
+if [ "$BUILD_CONFIG" = "Debug" ]; then
     ####Override paramaters by CI env
     if [ $CI_BUILD_ID ]; then
         CFBundleVersion=$CI_BUILD_ID
@@ -41,7 +48,7 @@ if [ "$IOS_BUILD_CONFIG" = "Debug" ]; then
 
     if [ $CI_BUILD_REF ]; then
         CFBundleDisplayName=${CI_BUILD_REF:0:8}
-        CFBundleIdentifier=com.sample.$CI_BUILD_REF
+        CFBundleIdentifier=com.netviewtech.$CI_BUILD_REF
     fi
 fi
 #===============================

@@ -18,6 +18,7 @@
 #			-n					编译前是否先clean工程
 #			-p					平台标识符
 #			-l					log to file
+#			-a					archive
 
 
 
@@ -32,13 +33,18 @@ if [ ! -d $1 ];then
 fi
 
 #工程绝对路径
-cd $1
-project_path=$(pwd)
+if [ $PROJECT_HOME ]; then
+	project_path=$PROJECT_HOME
+	cd $project_path
+else
+	cd $1
+	project_path=$(pwd)
+fi
 
 #编译的configuration，默认为Release
 build_config=Release
 
-param_pattern=":p:nc:o:t:ws:l"
+param_pattern=":p:nc:o:t:ws:la"
 OPTIND=2
 while getopts $param_pattern optname
   do
@@ -48,6 +54,9 @@ while getopts $param_pattern optname
         ;;
 	  "l")
 		log_to_file=y
+		;;
+	  "a")
+		action_archive=y
 		;;
       "p")
 		tmp_optind=$OPTIND
@@ -163,12 +172,11 @@ while getopts $param_pattern optname
 
 
 #build文件夹路径
-build_path=${project_path}/build
-
-if [ ! -d $LOGS_BUILD_DIR ]; then
-	mkdir -p $LOGS_BUILD_DIR
+if [ $BUILD_HOME ]; then
+	build_path=$BUILD_HOME;
+else
+	build_path=${project_path}/build
 fi
-
 
 #生成的app文件目录
 appdirname=Release-iphoneos
@@ -188,6 +196,20 @@ fi
 
 #组合编译命令
 build_cmd='xcodebuild'
+if [ "$action_archive" = "y" ];then
+	build_cmd=${build_cmd}' archive'
+fi
+
+if [ $DERIVED_DATA_DIR ]; then
+	build_cmd=${build_cmd}' -derivedDataPath '${DERIVED_DATA_DIR}
+fi
+
+if [ $LOGS_BUILD_DIR ]; then
+	logs_dir=$LOGS_BUILD_DIR
+else
+	logs_dir=$build_path/logs
+	mkdir -p $logs_dir
+fi
 
 if [ "$build_workspace" != "" ];then
 	#编译workspace
@@ -211,23 +233,31 @@ fi
 #编译工程
 cd $project_path
 if [ "$log_to_file" = "y" ];then
-	$build_cmd >> ${LOGS_BUILD_DIR}/build.log 2>&1 || exit
+	$build_cmd >> ${logs_dir}/build.log 2>&1 || exit
 else
 	$build_cmd || exit
 fi
 
 echo "Build project done.."
 
+if [ "$action_archive" = "y" ]; then
+	exit
+fi
+
 #进入build路径
 cd $build_path
 
 #创建ipa-build文件夹
-if [ -d ./ipa-build ];then
-	rm -rf ipa-build
+if [ $IPA_BUILD_DIR ]; then
+	ipa_build_dir=$IPA_BUILD_DIR;
+else
+	ipa_build_dir=$build_path/ipa-build
 fi
-mkdir ipa-build
 
-
+if [ -d $ipa_build_dir ];then
+	rm -rf $ipa_build_dir
+fi
+mkdir -p $ipa_build_dir
 
 #app文件名称
 appname=$(basename ./${appdirname}/*.app)
@@ -248,10 +278,10 @@ ipa_name="${bundleName}_${platform_id}_${bundleShortVersion}_${build_config}_${b
 echo $ipa_name.ipa
 
 #xcrun打包
-package_cmd='xcrun -sdk iphoneos PackageApplication -v ./'${appdirname}'/*.app -o '${IPA_BUILD_DIR}'/'${ipa_name}'.ipa'
+package_cmd='xcrun -sdk iphoneos PackageApplication -v ./'${appdirname}'/*.app -o '${ipa_build_dir}'/'${ipa_name}'.ipa'
 
 if [ "$log_to_file" = "y" ];then
-	$package_cmd >> ${LOGS_BUILD_DIR}/package.log 2>&1 || exit
+	$package_cmd >> ${logs_dir}/package.log 2>&1 || exit
 else
 	$package_cmd || exit
 fi
@@ -265,10 +295,10 @@ fi
 
 
 ##### Generate plist
-PLIST_TEMPLATE=$PROJECT_HOME/scripts/template.plist
 
-ipaFile=$IPA_BUILD_DIR/$ipa_name.ipa
-plistFile=$IPA_BUILD_DIR/$ipa_name.plist
+ipaFile=$ipa_build_dir/$ipa_name.ipa
+plistFile=$ipa_build_dir/$ipa_name.plist
+PLIST_TEMPLATE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/template.plist
 cp $PLIST_TEMPLATE $plistFile
 
 $PLISTBUDDY -c "Set :items:0:metadata:title $ipa_name" $plistFile
@@ -281,8 +311,8 @@ echo "Generate plist done.."
 ##### Generate html
 
 html_name=${bundleVersion}_${displayName}_${bundleName}_${build_config}.html
-htmlFile=$IPA_BUILD_DIR/$html_name
-HTML_TEMPLATE=$PROJECT_HOME/scripts/template.html
+htmlFile=$ipa_build_dir/$html_name
+HTML_TEMPLATE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/template.html
 cp $HTML_TEMPLATE $htmlFile
 
 sed -i "" "s#__TITLE__#${ipa_name}#g" $htmlFile
