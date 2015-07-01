@@ -300,6 +300,7 @@ ipaFile=$ipa_build_dir/$ipa_name.ipa
 plistFile=$ipa_build_dir/$ipa_name.plist
 PLIST_TEMPLATE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/template.plist
 cp $PLIST_TEMPLATE $plistFile
+chmod 644 $plistFile
 
 $PLISTBUDDY -c "Set :items:0:metadata:title $ipa_name" $plistFile
 $PLISTBUDDY -c "Set :items:0:metadata:bundle-version $bundleVersion" $plistFile
@@ -314,6 +315,7 @@ html_name=${bundleVersion}_${displayName}_${bundleName}_${build_config}.html
 htmlFile=$ipa_build_dir/$html_name
 HTML_TEMPLATE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/template.html
 cp $HTML_TEMPLATE $htmlFile
+chmod 644 $htmlFile
 
 sed -i "" "s#__TITLE__#${ipa_name}#g" $htmlFile
 
