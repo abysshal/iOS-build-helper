@@ -128,9 +128,6 @@ fi
 
 if [ "$RUN_ACTION" = "test" ]; then
 
-    clean_coverage_cmd="$PROJECT_HOME/Pods/XcodeCoverage/cleancov"
-    $clean_coverage_cmd || exit
-
     xctool \
     -workspace $XCODE_WORKSPACE.xcworkspace \
     -scheme $XCODE_SCHEME \
