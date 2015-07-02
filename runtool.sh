@@ -132,6 +132,7 @@ if [ "$RUN_ACTION" = "test" ]; then
     -workspace $XCODE_WORKSPACE.xcworkspace \
     -scheme $XCODE_SCHEME \
     -sdk iphonesimulator \
+    -derivedDataPath $DERIVED_DATA_DIR \ 
     -reporter plain:$LOGS_BUILD_DIR/xctest.log \
     test || exit
 
