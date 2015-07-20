@@ -147,6 +147,7 @@ if [ "$RUN_ACTION" = "test" ]; then
 
     if [ "$RUN_ENV" = "ci" ]; then
         $coverage_cmd > $LOGS_BUILD_DIR/getcov.log 2>&1 || exit
+	tail -n 3 $LOGS_BUILD_DIR/getcov.log
     fi
 
     echo "Export TestCoverage report done.."
