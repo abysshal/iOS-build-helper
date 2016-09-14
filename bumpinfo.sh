@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# $1 - source.plist
+# $2 - target.plist
+# $3 - debug | adhoc | release
+
+export PLISTBUDDY=/usr/libexec/PlistBuddy
+
 function usage {
-    echo "bumpinfo.sh source.plist target.plist <debug | release>"
+    echo "bumpinfo.sh source.plist target.plist <debug | adhoc | release>"
 }
 
 if [ $# -lt 3 ]; then
@@ -22,7 +28,7 @@ if [ ! -f $INFOPLIST ]; then
 fi
 
 
-if [ "$3" = "debug" ] || [ "$3" = "release" ]; then
+if [ "$3" = "debug" ] || [ "$3" = "adhoc" ] || [ "$3" = "release" ]; then
     BUILD_CONFIG=$3
 else
     usage
@@ -51,6 +57,15 @@ if [ "$BUILD_CONFIG" = "debug" ]; then
         CFBundleIdentifier=com.netviewtech.$CI_BUILD_REF
     fi
 fi
+
+if [ "$BUILD_CONFIG" = "adhoc" ]; then
+    ####Override paramaters by CI env
+    if [ $CI_BUILD_ID ]; then
+        CFBundleVersion=$CI_BUILD_ID
+        CFBundleDisplayName=$CI_BUILD_ID
+    fi
+fi
+
 #===============================
 
 echo "Bumping info.plist: $INFOPLIST"

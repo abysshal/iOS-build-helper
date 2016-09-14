@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# $1 - build output path
+
 if [ $DEPLOY_ENDPOINT ]; then
 	echo "Deploy Endpoint: $DEPLOY_ENDPOINT"
 else
@@ -10,13 +12,21 @@ fi
 DEPLOY_PATH_ROOT=ota/`date +"%Y%m"`
 DEPLOY_PATH_RES=res
 
-ipaFileName=`basename $IPA_BUILD_DIR/*.ipa`
-plistFileName=`basename $IPA_BUILD_DIR/*.plist`
-htmlFileName=`basename $IPA_BUILD_DIR/*.html`
-
-ipaFile=$IPA_BUILD_DIR/$ipaFileName
-plistFile=$IPA_BUILD_DIR/$plistFileName
-htmlFile=$IPA_BUILD_DIR/$htmlFileName
+if [ $1 ]; then
+	ipaFileName=`basename $1/*.ipa`
+	plistFileName=`basename $1/*.plist`
+	htmlFileName=`basename $1/*.html`
+	ipaFile=$1/$ipaFileName
+	plistFile=$1/$plistFileName
+	htmlFile=$1/$htmlFileName
+else
+	ipaFileName=`basename $IPA_BUILD_DIR/*.ipa`
+	plistFileName=`basename $IPA_BUILD_DIR/*.plist`
+	htmlFileName=`basename $IPA_BUILD_DIR/*.html`
+	ipaFile=$IPA_BUILD_DIR/$ipaFileName
+	plistFile=$IPA_BUILD_DIR/$plistFileName
+	htmlFile=$IPA_BUILD_DIR/$htmlFileName
+fi
 
 IPA_URL=$DEPLOY_ENDPOINT/$DEPLOY_PATH_ROOT/$DEPLOY_PATH_RES/$ipaFileName
 PLIST_URL=$DEPLOY_ENDPOINT/$DEPLOY_PATH_ROOT/$DEPLOY_PATH_RES/$plistFileName
