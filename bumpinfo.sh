@@ -66,6 +66,13 @@ if [ "$BUILD_CONFIG" = "adhoc" ]; then
     fi
 fi
 
+if [ "$BUILD_CONFIG" = "release" ]; then
+    ####Override paramaters by CI env
+    if [ $CI_BUILD_ID ]; then
+        CFBundleVersion=$CI_BUILD_ID
+    fi
+fi
+
 #===============================
 
 echo "Bumping info.plist: $INFOPLIST"
